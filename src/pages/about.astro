@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { CONTACT_EMAIL } from '../config';
+---
+
+<Layout title="About">
+  <div class="max-w-prose">
+    <h1 class="mb-4 text-sm font-light tracking-[0.3em] uppercase">About</h1>
+    <p class="text-sm leading-relaxed text-muted">
+      Placeholder — a short paragraph about the photographer goes here.
+    </p>
+    <p class="mt-6 text-sm">
+      <a href={`mailto:${CONTACT_EMAIL}`} class="underline underline-offset-4 hover:text-muted">
+        {CONTACT_EMAIL}
+      </a>
+    </p>
+  </div>
+</Layout>

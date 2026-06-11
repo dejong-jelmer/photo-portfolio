@@ -1,0 +1,45 @@
+---
+import '../styles/global.css';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../config';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = SITE_DESCRIPTION } = Astro.props;
+const pageTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle}</title>
+  </head>
+  <body class="flex min-h-dvh flex-col bg-bg font-sans text-fg antialiased">
+    <header class="mx-auto w-full max-w-7xl px-3 py-8 sm:px-4 sm:py-10">
+      <div class="flex items-baseline justify-between">
+        <a href="/" class="text-sm font-light tracking-[0.3em] uppercase">{SITE_TITLE}</a>
+        <nav>
+          <a
+            href="/about/"
+            class="text-xs tracking-widest text-muted uppercase transition-colors hover:text-fg"
+          >
+            About
+          </a>
+        </nav>
+      </div>
+    </header>
+    <main class="mx-auto w-full max-w-7xl flex-1 px-3 pb-12 sm:px-4">
+      <slot />
+    </main>
+    <footer class="mx-auto w-full max-w-7xl px-3 pb-8 sm:px-4">
+      <p class="text-xs text-muted">© {new Date().getFullYear()} Jelmer</p>
+    </footer>
+  </body>
+</html>
