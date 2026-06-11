@@ -1,0 +1,23 @@
+@import 'tailwindcss';
+
+/*
+ * Theme tokens. Light is the default; flip by setting data-theme="dark"
+ * on the <html> element. Deliberately minimal — the photos provide the color.
+ */
+:root {
+  --bg: #fafaf9;
+  --fg: #1c1c1e;
+  --muted: #76767d;
+}
+
+:root[data-theme='dark'] {
+  --bg: #0f0f10;
+  --fg: #ececec;
+  --muted: #98989f;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+}
