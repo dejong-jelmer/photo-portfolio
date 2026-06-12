@@ -1,6 +1,8 @@
 ---
-import '../styles/global.css';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../config';
+import "../styles/global.css";
+import { Image } from "astro:assets";
+import J from "../image/J.png";
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_AUTHOR } from "../config";
 
 interface Props {
   title?: string;
@@ -20,18 +22,53 @@ const pageTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{pageTitle}</title>
+    <!-- Runs before first paint to avoid a light-mode flash on dark-mode visits. -->
+    <script is:inline>
+      (() => {
+        let theme;
+        try {
+          theme = localStorage.getItem("theme");
+        } catch {}
+        if (theme !== "light" && theme !== "dark") {
+          theme = matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
   </head>
   <body class="flex min-h-dvh flex-col bg-bg font-sans text-fg antialiased">
     <header class="mx-auto w-full max-w-7xl px-3 py-8 sm:px-4 sm:py-10">
       <div class="flex items-baseline justify-between">
-        <a href="/" class="text-sm font-light tracking-[0.3em] uppercase">{SITE_TITLE}</a>
-        <nav>
+        <div class="inline-flex">
+          <a
+            href="/"
+            class="inline-flex items-center gap-6 text-xl font-bold tracking-[0.3em] uppercase hover:text-muted"
+          >
+            <Image src={J} alt="" width={48} height={48} class="size-12 rounded-md" />
+            {SITE_TITLE}
+          </a>
+        </div>
+        <nav class="flex items-center gap-5">
           <a
             href="/about/"
-            class="text-xs tracking-widest text-muted uppercase transition-colors hover:text-fg"
+            class="text-md tracking-widest text-muted uppercase transition-colors hover:text-fg"
           >
-            About
+            Over {SITE_AUTHOR}
           </a>
+          <button
+            id="theme-toggle"
+            type="button"
+            role="switch"
+            aria-checked="false"
+            aria-label="Donkere modus"
+            class="relative h-5 w-9 cursor-pointer rounded-full border border-muted/40 transition-colors hover:border-muted"
+          >
+            <span
+              class="theme-toggle-thumb absolute top-0.5 left-0.5 size-3.5 rounded-full bg-fg transition-transform duration-200"
+            ></span>
+          </button>
         </nav>
       </div>
     </header>
@@ -39,7 +76,31 @@ const pageTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
       <slot />
     </main>
     <footer class="mx-auto w-full max-w-7xl px-3 pb-8 sm:px-4">
-      <p class="text-xs text-muted">© {new Date().getFullYear()} Jelmer</p>
+      <p class="text-xs text-muted">
+        © {new Date().getFullYear()}
+        {SITE_AUTHOR}
+      </p>
     </footer>
+    <script>
+      const toggle = document.getElementById("theme-toggle");
+      const root = document.documentElement;
+
+      function syncSwitch() {
+        toggle?.setAttribute(
+          "aria-checked",
+          String(root.dataset.theme === "dark"),
+        );
+      }
+
+      syncSwitch();
+      toggle?.addEventListener("click", () => {
+        const next = root.dataset.theme === "dark" ? "light" : "dark";
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem("theme", next);
+        } catch {}
+        syncSwitch();
+      });
+    </script>
   </body>
 </html>

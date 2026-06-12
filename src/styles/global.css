@@ -8,12 +8,19 @@
   --bg: #fafaf9;
   --fg: #1c1c1e;
   --muted: #76767d;
+  color-scheme: light;
 }
 
 :root[data-theme='dark'] {
   --bg: #0f0f10;
   --fg: #ececec;
   --muted: #98989f;
+  color-scheme: dark;
+}
+
+/* Thumb position of the header theme switch (see Layout.astro). */
+:root[data-theme='dark'] .theme-toggle-thumb {
+  transform: translateX(1rem);
 }
 
 @theme inline {

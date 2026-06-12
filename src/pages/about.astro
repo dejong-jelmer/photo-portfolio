@@ -1,18 +1,53 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { CONTACT_EMAIL } from '../config';
+import { Picture } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import { SITE_TITLE, CONTACT_EMAIL_PARTS, SITE_AUTHOR } from "../config";
+import me from "../image/me.webp";
+
+const [user, domain] = CONTACT_EMAIL_PARTS;
 ---
 
 <Layout title="About">
   <div class="max-w-prose">
-    <h1 class="mb-4 text-sm font-light tracking-[0.3em] uppercase">About</h1>
+    <h1 class="mb-4 text-sm font-light tracking-[0.3em] uppercase">Over {SITE_AUTHOR}</h1>
+    <Picture
+      src={me}
+      width={720}
+      widths={[400, 720, 1440]}
+      sizes="(min-width: 640px) 640px, 100vw"
+      formats={["avif", "webp"]}
+      fallbackFormat="jpeg"
+      alt={`Portret van ${SITE_AUTHOR}`}
+      loading="eager"
+      pictureAttributes={{ class: "contents" }}
+      class="mb-6 w-full bg-fg/5"
+    />
     <p class="text-sm leading-relaxed text-muted">
-      Placeholder — a short paragraph about the photographer goes here.
+      {SITE_TITLE} is het portfolio van Jelmer de Jong, een fotograaf uit
+      Nijmegen die het menselijke en het onderweg-zijn vastlegt. Ik fotografeer
+      plekken, mensen en momenten, met oog voor sfeer en eenvoud. Deze site
+      bundelt mijn werk op één plek, zodat bezoekers rustig kunnen rondkijken en
+      contact kunnen opnemen.
     </p>
     <p class="mt-6 text-sm">
-      <a href={`mailto:${CONTACT_EMAIL}`} class="underline underline-offset-4 hover:text-muted">
-        {CONTACT_EMAIL}
+      <!-- No-JS fallback text; the script below swaps in the real address. -->
+      <a
+        id="contact-email"
+        class="underline underline-offset-4 hover:text-muted"
+      >
+        {user} [at] {domain}
       </a>
     </p>
   </div>
 </Layout>
+
+<script>
+  import { CONTACT_EMAIL_PARTS } from "../config";
+
+  const link = document.getElementById("contact-email");
+  if (link instanceof HTMLAnchorElement) {
+    const email = CONTACT_EMAIL_PARTS.join("@");
+    link.href = `mailto:${email}`;
+    link.textContent = email;
+  }
+</script>
