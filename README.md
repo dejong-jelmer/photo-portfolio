@@ -85,18 +85,27 @@ npm run preview  # serve the built site locally
 The sample images in `src/photos/` are generated placeholders — replace them
 with real photos.
 
-## Deploying to Cloudflare Pages
+## Deploying to Cloudflare (Workers with static assets)
+
+The site deploys as a Cloudflare Worker that serves only static assets —
+[`wrangler.jsonc`](wrangler.jsonc) pins this. **Do not remove that file:**
+without it, Cloudflare's build auto-configures Astro as an SSR app, whose
+runtime `/_image` endpoint cannot run on a Worker, and every photo 404s.
 
 1. Push the repo to GitHub (or GitLab).
-2. In the Cloudflare dashboard: **Workers & Pages → Create → Pages →
-   Connect to Git** and select the repo.
+2. In the Cloudflare dashboard: **Workers & Pages → Create → Workers →
+   Import a repository** and select the repo.
 3. Build settings:
    - **Build command:** `npm run build`
-   - **Build output directory:** `dist`
-   - No framework adapter needed — the output is purely static.
+   - **Deploy command:** `npx wrangler deploy`
+   - No framework adapter — the output is purely static, and
+     `wrangler.jsonc` tells Wrangler to upload `dist/` as assets only.
    - The default build image works (Node 22 is available).
 4. Every push to the production branch deploys automatically. A custom domain
-   can be attached later under the project's **Custom domains** tab.
+   can be attached later under the Worker's **Domains & Routes** settings.
+
+(Classic Cloudflare Pages also works: build command `npm run build`, output
+directory `dist`.)
 
 ### Why the variant count is deliberately low
 

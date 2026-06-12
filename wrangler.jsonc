@@ -1,0 +1,12 @@
+{
+  // Static assets only — there is deliberately no "main"/server bundle.
+  // Without this file, Cloudflare's Workers build auto-configures Astro as an
+  // SSR app, whose runtime /_image endpoint cannot work on a Worker. This
+  // pins the deploy to plain static file serving of the build output.
+  "name": "photo-portfolio",
+  "compatibility_date": "2026-06-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}
