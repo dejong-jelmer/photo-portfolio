@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import { Image } from "astro:assets";
 import J from "../image/J.png";
+import ThemeToggle from "../components/ThemeToggle.astro";
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_AUTHOR } from "../config";
 
 interface Props {
@@ -51,25 +52,75 @@ const pageTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
           </a>
         </div>
         <nav class="flex items-center gap-5">
+          <!-- Desktop: link + schakelaar naast elkaar -->
+          <div class="hidden items-center gap-5 sm:flex">
+            <a
+              href="/about/"
+              class="text-md tracking-widest text-muted uppercase transition-colors hover:text-fg"
+            >
+              Over {SITE_AUTHOR}
+            </a>
+            <ThemeToggle />
+          </div>
+          <!-- Mobiel: hamburgerknop die het menu hieronder opent -->
+          <button
+            id="menu-toggle"
+            type="button"
+            aria-label="Menu"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+            class="-mr-1 inline-flex size-9 cursor-pointer items-center justify-center rounded-md text-fg transition-colors hover:text-muted sm:hidden"
+          >
+            <svg
+              class="menu-icon-open size-6"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="4" x2="20" y1="6" y2="6"></line>
+              <line x1="4" x2="20" y1="12" y2="12"></line>
+              <line x1="4" x2="20" y1="18" y2="18"></line>
+            </svg>
+            <svg
+              class="menu-icon-close hidden size-6"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+        </nav>
+      </div>
+      <!-- Mobiel uitklapmenu -->
+      <div id="mobile-menu" class="hidden sm:hidden">
+        <div
+          class="mt-5 flex flex-col gap-5 border-t border-muted/20 pt-5"
+        >
           <a
             href="/about/"
             class="text-md tracking-widest text-muted uppercase transition-colors hover:text-fg"
           >
             Over {SITE_AUTHOR}
           </a>
-          <button
-            id="theme-toggle"
-            type="button"
-            role="switch"
-            aria-checked="false"
-            aria-label="Donkere modus"
-            class="relative h-5 w-9 cursor-pointer rounded-full border border-muted/40 transition-colors hover:border-muted"
-          >
-            <span
-              class="theme-toggle-thumb absolute top-0.5 left-0.5 size-3.5 rounded-full bg-fg transition-transform duration-200"
-            ></span>
-          </button>
-        </nav>
+          <div class="flex items-center gap-3">
+            <span class="text-md tracking-widest text-muted uppercase">
+              Thema
+            </span>
+            <ThemeToggle />
+          </div>
+        </div>
       </div>
     </header>
     <main class="mx-auto w-full max-w-7xl flex-1 px-3 pb-12 sm:px-4">
@@ -82,24 +133,48 @@ const pageTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
       </p>
     </footer>
     <script>
-      const toggle = document.getElementById("theme-toggle");
       const root = document.documentElement;
+      const toggles = document.querySelectorAll(".theme-toggle");
 
       function syncSwitch() {
-        toggle?.setAttribute(
-          "aria-checked",
-          String(root.dataset.theme === "dark"),
-        );
+        const checked = String(root.dataset.theme === "dark");
+        toggles.forEach((t) => t.setAttribute("aria-checked", checked));
       }
 
       syncSwitch();
-      toggle?.addEventListener("click", () => {
-        const next = root.dataset.theme === "dark" ? "light" : "dark";
-        root.dataset.theme = next;
-        try {
-          localStorage.setItem("theme", next);
-        } catch {}
-        syncSwitch();
+      toggles.forEach((toggle) => {
+        toggle.addEventListener("click", () => {
+          const next = root.dataset.theme === "dark" ? "light" : "dark";
+          root.dataset.theme = next;
+          try {
+            localStorage.setItem("theme", next);
+          } catch {}
+          syncSwitch();
+        });
+      });
+
+      // Mobiel hamburgermenu open/dicht.
+      const menuToggle = document.getElementById("menu-toggle");
+      const mobileMenu = document.getElementById("mobile-menu");
+
+      function setMenuOpen(open: boolean) {
+        menuToggle?.setAttribute("aria-expanded", String(open));
+        mobileMenu?.classList.toggle("hidden", !open);
+        menuToggle
+          ?.querySelector(".menu-icon-open")
+          ?.classList.toggle("hidden", open);
+        menuToggle
+          ?.querySelector(".menu-icon-close")
+          ?.classList.toggle("hidden", !open);
+      }
+
+      menuToggle?.addEventListener("click", () => {
+        setMenuOpen(mobileMenu?.classList.contains("hidden") ?? false);
+      });
+
+      // Sluit het menu bij navigatie of als het scherm naar desktop groeit.
+      matchMedia("(min-width: 640px)").addEventListener("change", (e) => {
+        if (e.matches) setMenuOpen(false);
       });
     </script>
   </body>

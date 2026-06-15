@@ -18,9 +18,22 @@
   color-scheme: dark;
 }
 
-/* Thumb position of the header theme switch (see Layout.astro). */
+/* Theme switch (see ThemeToggle.astro): slide the thumb and swap the
+ * sun/moon icon based on the active theme. */
 :root[data-theme='dark'] .theme-toggle-thumb {
-  transform: translateX(1rem);
+  transform: translateX(1.25rem);
+}
+
+.theme-toggle-moon {
+  display: none;
+}
+
+:root[data-theme='dark'] .theme-toggle-sun {
+  display: none;
+}
+
+:root[data-theme='dark'] .theme-toggle-moon {
+  display: block;
 }
 
 @theme inline {
